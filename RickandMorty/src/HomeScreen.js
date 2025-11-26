@@ -1,36 +1,44 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, FlatList, Image, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import axios from 'axios';
 
 const HomeScreen = ({ navigation }) => {
   const [characters, setCharacters] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     axios.get('https://rickandmortyapi.com/api/character')
-      .then(response => setCharacters(response.data.results))
-      .catch(error => console.error(error));
+      .then(response => {
+        setCharacters(response.data.results);
+        setLoading(false);
+      })
+      .catch(error => {
+        console.error(error);
+        setLoading(false);
+      });
   }, []);
 
   const renderItem = ({ item }) => (
     <TouchableOpacity 
-    onPress={() => navigation.navigate('Details', { character: item })} 
-    style={styles.card}
+      onPress={() => navigation.navigate('Details', { character: item })} 
+      style={styles.card}
     >
-      <Image source={{ uri: item.image }} 
-      style={styles.avatar} 
-      />
+      <Image source={{ uri: item.image }} style={styles.avatar} />
       <Text style={styles.name}>{item.name}</Text>
     </TouchableOpacity>
   );
 
   return (
     <View style={styles.container}>
-      
-      <FlatList
-        data={characters}
-        keyExtractor={item => item.id.toString()}
-        renderItem={renderItem}
-      />
+      {loading ? (
+        <ActivityIndicator size="large" color="#37703fff" />
+      ) : (
+        <FlatList
+          data={characters}
+          keyExtractor={item => item.id.toString()}
+          renderItem={renderItem}
+        />
+      )}
     </View>
   );
 };
@@ -40,13 +48,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#c9d487ff'
-  },
-
-  title: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    marginBottom: 10
+    backgroundColor: '#c9d487ff',
+    justifyContent: 'center', // centraliza o loading
+    alignItems: 'center'
   },
   card: {
     flexDirection: 'row',
@@ -56,14 +60,12 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: '#37703fff'
   },
-
   avatar: {
     width: 60,
     height: 60,
     borderRadius: 30,
     marginRight: 10 
   },
-
   name: {
     fontSize: 18,
     fontFamily: 'monospace'
