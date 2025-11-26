@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     backgroundColor: '#c9d487ff',
-    justifyContent: 'center', // centraliza o loading
+    justifyContent: 'center',
     alignItems: 'center'
   },
   card: {
